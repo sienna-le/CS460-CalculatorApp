@@ -12,6 +12,17 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
 
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+
+/**
+ *
+ * This calculator app performs mathematical operations following the user interface built using Android Studio
+ *
+ * @author Sienna Le
+ * @since 10-9-2026
+ */
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView resultTV, solutionTV;
@@ -20,6 +31,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     MaterialButton buttonDivide,buttonMultiply,buttonAdd,buttonSubtract;
     MaterialButton buttonAC,buttonDot;
 
+    /**
+     *
+     * Initialize buttons, results and solution tv.
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *    recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,10 +76,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         assignID(buttonDot,R.id.button_dot);
 
     }
+
+    /**
+     *
+     * Initializes buttons to the corresponding material button in xml when clicked.
+     *
+     * @param btn Material button initialized in main
+     * @param id Reference button ID in xml
+     */
     void assignID(MaterialButton btn, int id){
         btn = findViewById(id);
         btn.setOnClickListener(this);
     }
+
+    /**
+     *
+     * Display button click output and its result, as well as set AC,C and equals function.
+     *
+     * @param view Displays text once button is clicked
+     */
 
     @Override
     public void onClick(View view) {
@@ -84,7 +118,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         //dataToCalculate = dataToCalculate+buttonText;
         solutionTV.setText(dataToCalculate);
+        String finalResult = getResults(dataToCalculate);
+        if(!finalResult.equals("Err")){
+            resultTV.setText(finalResult);
+        }
 
     }
-    //String getResults()
-}
+
+    /**
+     *
+     *Set calculator ability to perform mathematical calculations using package
+     *
+     * @param data Mathematical data that is calculated
+     * @return Final result of mathematical calculation
+     */
+    String getResults (String data) {
+        try {
+            Context context = Context.enter();
+            context.setOptimizationLevel(-1);
+            Scriptable scriptable = context.initStandardObjects();
+            return context.evaluateString(scriptable, data, "Javascript", 1, null).toString();
+        } catch (Exception e) {
+            return "Err";
+            }
+        }
+
+    }
